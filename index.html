@@ -30,10 +30,7 @@ body{font-family:'Nunito',sans-serif;min-height:100vh}
 .cnt-btn{width:40px;height:40px;border-radius:50%;border:none;background:#b84a08;color:#fff;font-size:1.4rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .1s,background .15s}
 .cnt-btn:active{transform:scale(.88);background:#8a3206}
 #pcount{font-size:1.6rem;font-weight:900;color:#2c1a08;min-width:28px;text-align:center}
-.sec-tag{font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;padding:4px 12px;border-radius:20px;display:inline-block;margin:6px 0 10px}
-.sec-town{background:#e4f0e4;color:#1e5c1e}
-.sec-mafia{background:#f0e4e4;color:#7a1a1a}
-.sec-neutral{background:#e4e4f0;color:#1a1a7a}
+
 .roles-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .role-card{background:#fff;border-radius:14px;border:2px solid #e0cdb8;padding:13px 12px 12px;transition:border-color .2s,background .2s;position:relative}
 .role-card.on{border-color:#b84a08;background:#fff8f3}
@@ -162,16 +159,24 @@ body{font-family:'Nunito',sans-serif;min-height:100vh}
 
   <div>
     <div class="s-label">Roles</div>
+    <div class="roles-grid">
 
 ```
-<span class="sec-tag sec-town">🏘️ Town</span>
-<div class="roles-grid">
+  <div class="role-card on" id="card-mafia">
+    <button class="info-btn" onclick="showInfo('mafia')">i</button>
+    <span class="r-icon">&#x1F52A;</span><div class="r-name">Mafia</div>
+    <div class="rc">
+      <button class="rc-btn" onclick="chgRole('mafia',-1)">&#x2212;</button>
+      <span class="rc-n" id="rc-mafia">1</span>
+      <button class="rc-btn" onclick="chgRole('mafia',1)">+</button>
+    </div>
+  </div>
 
   <div class="role-card" id="card-detective">
     <button class="info-btn" onclick="showInfo('detective')">i</button>
-    <span class="r-icon">🔍</span><div class="r-name">Detective</div>
+    <span class="r-icon">&#x1F50D;</span><div class="r-name">Detective</div>
     <div class="rc">
-      <button class="rc-btn" onclick="chgRole('detective',-1)">−</button>
+      <button class="rc-btn" onclick="chgRole('detective',-1)">&#x2212;</button>
       <span class="rc-n" id="rc-detective">0</span>
       <button class="rc-btn" onclick="chgRole('detective',1)">+</button>
     </div>
@@ -179,9 +184,9 @@ body{font-family:'Nunito',sans-serif;min-height:100vh}
 
   <div class="role-card" id="card-doctor">
     <button class="info-btn" onclick="showInfo('doctor')">i</button>
-    <span class="r-icon">💊</span><div class="r-name">Doctor</div>
+    <span class="r-icon">&#x1F48A;</span><div class="r-name">Doctor</div>
     <div class="rc">
-      <button class="rc-btn" onclick="chgRole('doctor',-1)">−</button>
+      <button class="rc-btn" onclick="chgRole('doctor',-1)">&#x2212;</button>
       <span class="rc-n" id="rc-doctor">0</span>
       <button class="rc-btn" onclick="chgRole('doctor',1)">+</button>
     </div>
@@ -189,103 +194,92 @@ body{font-family:'Nunito',sans-serif;min-height:100vh}
 
   <div class="role-card" id="card-cupid">
     <button class="info-btn" onclick="showInfo('cupid')">i</button>
-    <span class="r-icon">💘</span><div class="r-name">Cupid</div>
-    <div class="tog-row" onclick="toggleSolo('cupid')">
-      <div class="tog-track" id="tog-cupid"><div class="tog-thumb"></div></div>
-      <span class="tog-label">Include</span>
+    <span class="r-icon">&#x1F498;</span><div class="r-name">Cupid</div>
+    <div class="rc">
+      <button class="rc-btn" onclick="chgRole('cupid',-1)">&#x2212;</button>
+      <span class="rc-n" id="rc-cupid">0</span>
+      <button class="rc-btn" onclick="chgRole('cupid',1)">+</button>
     </div>
   </div>
 
   <div class="role-card" id="card-mayor">
     <button class="info-btn" onclick="showInfo('mayor')">i</button>
-    <span class="r-icon">👴</span><div class="r-name">Mayor</div>
-    <div class="tog-row" onclick="toggleSolo('mayor')">
-      <div class="tog-track" id="tog-mayor"><div class="tog-thumb"></div></div>
-      <span class="tog-label">Include</span>
+    <span class="r-icon">&#x1F474;</span><div class="r-name">Mayor</div>
+    <div class="rc">
+      <button class="rc-btn" onclick="chgRole('mayor',-1)">&#x2212;</button>
+      <span class="rc-n" id="rc-mayor">0</span>
+      <button class="rc-btn" onclick="chgRole('mayor',1)">+</button>
     </div>
   </div>
 
   <div class="role-card" id="card-witch">
     <button class="info-btn" onclick="showInfo('witch')">i</button>
-    <span class="r-icon">🧙</span><div class="r-name">Witch</div>
-    <div class="tog-row" onclick="toggleSolo('witch')">
-      <div class="tog-track" id="tog-witch"><div class="tog-thumb"></div></div>
-      <span class="tog-label">Include</span>
+    <span class="r-icon">&#x1F9D9;</span><div class="r-name">Witch</div>
+    <div class="rc">
+      <button class="rc-btn" onclick="chgRole('witch',-1)">&#x2212;</button>
+      <span class="rc-n" id="rc-witch">0</span>
+      <button class="rc-btn" onclick="chgRole('witch',1)">+</button>
     </div>
   </div>
 
   <div class="role-card" id="card-bodyguard">
     <button class="info-btn" onclick="showInfo('bodyguard')">i</button>
-    <span class="r-icon">🛡️</span><div class="r-name">Bodyguard</div>
-    <div class="tog-row" onclick="toggleSolo('bodyguard')">
-      <div class="tog-track" id="tog-bodyguard"><div class="tog-thumb"></div></div>
-      <span class="tog-label">Include</span>
+    <span class="r-icon">&#x1F6E1;&#xFE0F;</span><div class="r-name">Bodyguard</div>
+    <div class="rc">
+      <button class="rc-btn" onclick="chgRole('bodyguard',-1)">&#x2212;</button>
+      <span class="rc-n" id="rc-bodyguard">0</span>
+      <button class="rc-btn" onclick="chgRole('bodyguard',1)">+</button>
     </div>
   </div>
 
   <div class="role-card" id="card-sheriff">
     <button class="info-btn" onclick="showInfo('sheriff')">i</button>
-    <span class="r-icon">🕵️</span><div class="r-name">Sheriff</div>
-    <div class="tog-row" onclick="toggleSolo('sheriff')">
-      <div class="tog-track" id="tog-sheriff"><div class="tog-thumb"></div></div>
-      <span class="tog-label">Include</span>
+    <span class="r-icon">&#x1F575;&#xFE0F;</span><div class="r-name">Sheriff</div>
+    <div class="rc">
+      <button class="rc-btn" onclick="chgRole('sheriff',-1)">&#x2212;</button>
+      <span class="rc-n" id="rc-sheriff">0</span>
+      <button class="rc-btn" onclick="chgRole('sheriff',1)">+</button>
     </div>
   </div>
 
   <div class="role-card" id="card-seer">
     <button class="info-btn" onclick="showInfo('seer')">i</button>
-    <span class="r-icon">👁️</span><div class="r-name">Seer</div>
-    <div class="tog-row" onclick="toggleSolo('seer')">
-      <div class="tog-track" id="tog-seer"><div class="tog-thumb"></div></div>
-      <span class="tog-label">Include</span>
-    </div>
-  </div>
-
-</div>
-
-<span class="sec-tag sec-mafia" style="margin-top:14px">🔪 Mafia</span>
-<div class="roles-grid">
-  <div class="role-card on" id="card-mafia">
-    <button class="info-btn" onclick="showInfo('mafia')">i</button>
-    <span class="r-icon">🔪</span><div class="r-name">Mafia</div>
+    <span class="r-icon">&#x1F441;&#xFE0F;</span><div class="r-name">Seer</div>
     <div class="rc">
-      <button class="rc-btn" onclick="chgRole('mafia',-1)">−</button>
-      <span class="rc-n" id="rc-mafia">1</span>
-      <button class="rc-btn" onclick="chgRole('mafia',1)">+</button>
+      <button class="rc-btn" onclick="chgRole('seer',-1)">&#x2212;</button>
+      <span class="rc-n" id="rc-seer">0</span>
+      <button class="rc-btn" onclick="chgRole('seer',1)">+</button>
     </div>
   </div>
-</div>
 
-<span class="sec-tag sec-neutral" style="margin-top:14px">🃏 Neutral</span>
-<div class="roles-grid">
   <div class="role-card" id="card-jester">
     <button class="info-btn" onclick="showInfo('jester')">i</button>
-    <span class="r-icon">🃏</span><div class="r-name">Jester</div>
-    <div class="tog-row" onclick="toggleSolo('jester')">
-      <div class="tog-track" id="tog-jester"><div class="tog-thumb"></div></div>
-      <span class="tog-label">Include</span>
+    <span class="r-icon">&#x1F0CF;</span><div class="r-name">Jester</div>
+    <div class="rc">
+      <button class="rc-btn" onclick="chgRole('jester',-1)">&#x2212;</button>
+      <span class="rc-n" id="rc-jester">0</span>
+      <button class="rc-btn" onclick="chgRole('jester',1)">+</button>
     </div>
   </div>
 
   <div class="role-card" id="card-lonewolf">
     <button class="info-btn" onclick="showInfo('lonewolf')">i</button>
-    <span class="r-icon">🐺</span><div class="r-name">Lone Wolf</div>
-    <div class="tog-row" onclick="toggleSolo('lonewolf')">
-      <div class="tog-track" id="tog-lonewolf"><div class="tog-thumb"></div></div>
-      <span class="tog-label">Include</span>
+    <span class="r-icon">&#x1F43A;</span><div class="r-name">Lone Wolf</div>
+    <div class="rc">
+      <button class="rc-btn" onclick="chgRole('lonewolf',-1)">&#x2212;</button>
+      <span class="rc-n" id="rc-lonewolf">0</span>
+      <button class="rc-btn" onclick="chgRole('lonewolf',1)">+</button>
     </div>
   </div>
+
+</div>
+<div class="s-label">Villagers</div>
+<div class="vill-row">
+  <span class="vi">🏘️</span>
+  <div><strong id="vcnt">7</strong> Villagers<span>Regular town folk — no special ability</span></div>
 </div>
 ```
 
-  </div>
-
-  <div>
-    <div class="s-label">Villagers</div>
-    <div class="vill-row">
-      <span class="vi">🏘️</span>
-      <div><strong id="vcnt">7</strong> Villagers<span>Regular town folk — no special ability</span></div>
-    </div>
   </div>
 
   <div class="err" id="err">Need at least 1 Mafia and enough players for all roles!</div>
@@ -337,8 +331,8 @@ const ROLE_INFO = {
 };
 
 let totalPlayers = 8;
-let roles = {mafia:1, detective:0, doctor:0};
-let soloRoles = {cupid:false, mayor:false, witch:false, bodyguard:false, sheriff:false, seer:false, jester:false, lonewolf:false};
+let roles = {mafia:1, detective:0, doctor:0, cupid:0, mayor:0, witch:0, bodyguard:0, sheriff:0, seer:0, jester:0, lonewolf:0};
+
 let round=1, steps=[], cur=0;
 let timerInterval=null, timerSec=0, timerRunning=false, timerMode='stopwatch', cdFrom=120;
 
@@ -348,19 +342,13 @@ function chgCount(d){
   updVill();
 }
 function chgRole(r,d){
-  roles[r]=Math.max(0,(roles[r]||0)+d);
+  roles[r]=Math.max(r==='mafia'?1:0,(roles[r]||0)+d);
   document.getElementById('rc-'+r).textContent=roles[r];
   document.getElementById('card-'+r).classList.toggle('on',roles[r]>0);
   updVill();
 }
-function toggleSolo(r){
-  soloRoles[r]=!soloRoles[r];
-  document.getElementById('tog-'+r).classList.toggle('on',soloRoles[r]);
-  document.getElementById('card-'+r).classList.toggle('on',soloRoles[r]);
-  updVill();
-}
 function updVill(){
-  const sp=(roles.mafia||0)+(roles.detective||0)+(roles.doctor||0)+Object.values(soloRoles).filter(Boolean).length;
+  const sp=Object.values(roles).reduce((a,b)=>a+b,0);
   document.getElementById('vcnt').textContent=Math.max(0,totalPlayers-sp);
 }
 
@@ -377,7 +365,7 @@ function closeModal(){document.getElementById('modal').classList.remove('show')}
 function closeModalOverlay(e){if(e.target===document.getElementById('modal'))closeModal()}
 
 function startGame(){
-  const sp=(roles.mafia||0)+(roles.detective||0)+(roles.doctor||0)+Object.values(soloRoles).filter(Boolean).length;
+  const sp=Object.values(roles).reduce((a,b)=>a+b,0);
   const err=document.getElementById('err');
   if((roles.mafia||0)<1||sp>totalPlayers){err.classList.add('show');return}
   err.classList.remove('show');
@@ -394,29 +382,29 @@ function restartGame(){
 function buildSteps(){
   steps=[];
   steps.push({phase:'night',emoji:'😴',name:'Everyone Sleeps',sub:'The village closes their eyes'});
-  if(soloRoles.cupid&&round===1)
+  if(roles.cupid>0&&round===1)
     steps.push({phase:'night',emoji:'💘',name:'Cupid Wakes',sub:'Cupid silently picks two lovers',tip:'If one lover dies, the other dies too'});
   steps.push({phase:'night',emoji:'🔪',name:'Mafia Wakes',sub:'The Mafia pick their target'});
-  if(soloRoles.lonewolf)
+  if(roles.lonewolf>0)
     steps.push({phase:'night',emoji:'🐺',name:'Lone Wolf',sub:'Already awake with the Mafia',tip:'They secretly play for themselves alone'});
   if((roles.detective||0)>0)
     steps.push({phase:'night',emoji:'🔍',name:'Detective Wakes',sub:'The Detective investigates a player',tip:'👍 Mafia  ·  👎 Innocent'});
-  if(soloRoles.sheriff)
+  if(roles.sheriff>0)
     steps.push({phase:'night',emoji:'🕵️',name:'Sheriff Wakes',sub:'The Sheriff investigates or shoots',tip:'Shooting an innocent = Sheriff dies'});
-  if(soloRoles.seer)
+  if(roles.seer>0)
     steps.push({phase:'night',emoji:'👁️',name:'Seer Wakes',sub:"The Seer sees one player's full role",tip:'Show them the actual role card'});
   if((roles.doctor||0)>0)
     steps.push({phase:'night',emoji:'💊',name:'Doctor Wakes',sub:'The Doctor chooses who to protect'});
-  if(soloRoles.bodyguard)
+  if(roles.bodyguard>0)
     steps.push({phase:'night',emoji:'🛡️',name:'Bodyguard Wakes',sub:'The Bodyguard chooses who to protect',tip:'If attacked, Bodyguard dies instead'});
-  if(soloRoles.witch)
+  if(roles.witch>0)
     steps.push({phase:'night',emoji:'🧙',name:'Witch Wakes',sub:'The Witch may use poison or antidote',tip:'One poison + one antidote — whole game'});
   steps.push({phase:'day',emoji:'🌅',name:'Village Wakes',sub:"Announce last night's result"});
-  if(soloRoles.mayor)
+  if(roles.mayor>0)
     steps.push({phase:'day',emoji:'👴',name:'Mayor',sub:'Mayor may reveal for a double vote',tip:'Revealing makes them a Mafia target'});
   steps.push({phase:'day',emoji:'🗣️',name:'Debate',sub:'The village discusses and accuses',timer:true});
   steps.push({phase:'day',emoji:'🗳️',name:'Vote',sub:'Vote to eliminate a suspect',tip:'Majority rules — tie = no elimination'});
-  if(soloRoles.jester)
+  if(roles.jester>0)
     steps.push({phase:'day',emoji:'🃏',name:'Jester Check',sub:'Did the Jester get voted out?',tip:'If yes — Jester wins the game immediately!'});
   steps.push({phase:'night',emoji:'🌙',name:'Night Falls',sub:'Round '+(round+1)+' is about to begin'});
 }
