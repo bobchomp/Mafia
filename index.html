@@ -153,7 +153,7 @@ body{font-family:"Nunito",sans-serif;min-height:100vh}
 .ac-item-icon{font-size:1.4rem;flex-shrink:0}
 .ac-item-name{font-weight:900;font-size:.95rem}
 .ac-item-role{font-size:.75rem;font-weight:700;opacity:.55;margin-top:1px}
-.ac-peaceful{font-size:.88rem;font-weight:700;opacity:.45;font-style:italic;padding:8px 0}
+.ac-peaceful{font-size:.88rem;font-weight:700;opacity:.45;font-style:italic;padding:8px 0}.ac-item-saved{border:1px solid rgba(40,160,80,.2)!important;background:rgba(40,160,80,.06)!important}.ac-saved-label{color:#2a9050!important;opacity:1!important}
 
 /* Timer */
 .timer-wrap{width:100%;border-radius:20px;padding:18px;border:1px solid rgba(255,255,255,.07);animation:rise .4s ease both;animation-delay:.07s;display:none}
@@ -745,11 +745,12 @@ function renderDawnAnnouncement(body){
 
   const itemsEl=document.getElementById("ac-items");
   const deaths=[];
+  const saves=[];
 
-  // Mafia kill (unless doctor saved)
+  // Mafia kill
   if(nightKillTarget!==null){
     if(doctorSaveTarget===nightKillTarget){
-      // saved
+      saves.push({idx:nightKillTarget, cause:"saved by the Doctor"});
     } else {
       deaths.push({idx:nightKillTarget, cause:"killed by the Mafia"});
     }
@@ -762,25 +763,43 @@ function renderDawnAnnouncement(body){
     }
   }
 
-  if(deaths.length===0){
-    itemsEl.innerHTML=`<div class="ac-peaceful">It was a peaceful night — no one died.</div>`;
+  // Apply deaths and check lovers
+  deaths.forEach(d=>{
+    const p=players[d.idx];
+    if(!p.dead){
+      p.dead=true;
+      if(p.lovers){
+        p.lovers.forEach(li=>{
+          if(!players[li].dead){
+            players[li].dead=true;
+            deaths.push({idx:li, cause:"died of heartbreak"});
+          }
+        });
+      }
+    }
+  });
+
+  let html="";
+
+  if(saves.length===0&&deaths.length===0){
+    html=`<div class="ac-peaceful">It was a peaceful night — no one died.</div>`;
   } else {
+    saves.forEach(s=>{
+      const p=players[s.idx];
+      const info=ROLE_INFO[p.role]||{icon:"🏘️"};
+      html+=`
+        <div class="ac-item ac-item-saved">
+          <span class="ac-item-icon">${info.icon}</span>
+          <div>
+            <div class="ac-item-name">${p.name}</div>
+            <div class="ac-item-role ac-saved-label">${info.name} — ${s.cause} 💚</div>
+          </div>
+        </div>`;
+    });
     deaths.forEach(d=>{
       const p=players[d.idx];
-      if(!p.dead){
-        p.dead=true;
-        // check lovers
-        if(p.lovers){
-          p.lovers.forEach(li=>{
-            if(!players[li].dead){
-              players[li].dead=true;
-              deaths.push({idx:li, cause:"died of heartbreak"});
-            }
-          });
-        }
-      }
       const info=ROLE_INFO[p.role]||{icon:"🏘️"};
-      itemsEl.innerHTML+=`
+      html+=`
         <div class="ac-item">
           <span class="ac-item-icon">${info.icon}</span>
           <div>
@@ -790,6 +809,8 @@ function renderDawnAnnouncement(body){
         </div>`;
     });
   }
+  itemsEl.innerHTML=html;
+
   // reset night targets for next round
   nightKillTarget=null; doctorSaveTarget=null; witchKillTarget=null;
 }
