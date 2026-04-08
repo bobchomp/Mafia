@@ -4,219 +4,447 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>🌙 Mafia Narrator</title>
+<title>Mafia Narrator</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --cream: #fdf6ec;
-    --warm: #f5e6cc;
-    --orange: #e8823a;
-    --orange-dark: #c4611d;
-    --orange-light: #f9a96e;
-    --brown: #5c3d1e;
-    --brown-light: #8b5e3c;
-    --night: #1a1025;
-    --night2: #2d1f3d;
-    --purple: #6b3fa0;
-    --purple-light: #9b6ed0;
-    --gold: #f0c040;
-    --red: #c0392b;
-    --green: #27ae60;
-    --blue: #2980b9;
-    --pink: #e91e8c;
-    --radius: 18px;
-    --shadow: 0 4px 24px rgba(92,61,30,0.13);
-  }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'Nunito', sans-serif; background: var(--cream); min-height: 100vh; color: var(--brown); overflow-x: hidden; }
+
+/* ── THEME VARS ── */
+:root {
+/* Setup (light, warm) */
+–s-bg: #f7f2eb;
+–s-card: #ffffff;
+–s-text: #2e1f0e;
+–s-muted: #8a6e52;
+–s-accent: #c0580a;
+–s-accent2: #e07b30;
+–s-border: #e8d9c5;
+
+```
+/* Game - night */
+--n-bg: #0f0a1a;
+--n-card: #1c1330;
+--n-card2: #251a3a;
+--n-text: #ede8f8;
+--n-muted: #8a7aaa;
+--n-accent: #7c4dcc;
+--n-accent2: #a375e0;
+--n-border: #2e2248;
+
+/* Game - day */
+--d-bg: #1a1208;
+--d-card: #2a1e0c;
+--d-card2: #352614;
+--d-text: #f5ead6;
+--d-muted: #a08060;
+--d-accent: #e07b30;
+--d-accent2: #f0a060;
+--d-border: #3d2c14;
+
+--radius: 16px;
+```
+
+}
+
+body { font-family: ‘Nunito’, sans-serif; min-height: 100vh; overflow-x: hidden; }
 
 .screen { display: none; min-height: 100vh; flex-direction: column; }
 .screen.active { display: flex; }
 
-/* SETUP */
-#setup { background: linear-gradient(160deg, #fff8ee 0%, #fde8cc 100%); padding: 28px 20px 40px; gap: 22px; }
-.logo { text-align: center; padding-top: 10px; }
-.logo h1 { font-family: ‘Playfair Display’, serif; font-size: 2.2rem; color: var(–brown); line-height: 1.1; }
-.logo h1 span { color: var(–orange); font-style: italic; }
-.logo p { color: var(–brown-light); font-size: 0.9rem; margin-top: 4px; font-weight: 600; }
-.section-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(–orange); margin-bottom: 10px; }
-.player-count-row { display: flex; align-items: center; gap: 14px; background: white; border-radius: var(–radius); padding: 16px 20px; box-shadow: var(–shadow); }
-.player-count-row label { font-weight: 700; font-size: 1rem; flex: 1; }
-.count-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(–orange); color: white; font-size: 1.4rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s, background 0.15s; flex-shrink: 0; }
-.count-btn:active { transform: scale(0.92); background: var(–orange-dark); }
-#player-count-display { font-size: 1.6rem; font-weight: 900; color: var(–brown); min-width: 32px; text-align: center; }
-.roles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.role-card { background: white; border-radius: var(–radius); padding: 14px 14px 12px; box-shadow: var(–shadow); border: 2.5px solid transparent; transition: border-color 0.2s, transform 0.15s; position: relative; overflow: hidden; }
-.role-card::before { content: ‘’; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 2px 2px 0 0; }
-.role-card.mafia::before { background: var(–red); }
-.role-card.detective::before { background: var(–blue); }
-.role-card.doctor::before { background: var(–green); }
-.role-card.cupid::before { background: var(–pink); }
-.role-card .role-icon { font-size: 1.8rem; display: block; }
-.role-card .role-name { font-weight: 800; font-size: 0.95rem; margin: 4px 0 2px; color: var(–brown); }
-.role-card .role-desc { font-size: 0.72rem; color: var(–brown-light); line-height: 1.3; }
-.role-count-ctrl { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
-.role-count-ctrl button { width: 28px; height: 28px; border-radius: 50%; border: none; background: var(–warm); color: var(–brown); font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: background 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.role-count-ctrl button:active { transform: scale(0.9); background: var(–orange-light); }
-.role-count-ctrl .rc-num { font-size: 1.1rem; font-weight: 900; color: var(–brown); min-width: 20px; text-align: center; }
-.role-card.has-role { border-color: var(–orange-light); background: #fffaf4; }
-.villagers-note { background: white; border-radius: var(–radius); padding: 14px 18px; box-shadow: var(–shadow); display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 0.95rem; }
-.villagers-note .vi { font-size: 1.6rem; }
-.villagers-note span { color: var(–brown-light); font-size: 0.8rem; font-weight: 600; display: block; }
-.start-btn { background: var(–orange); color: white; border: none; border-radius: var(–radius); padding: 18px; font-family: ‘Nunito’, sans-serif; font-size: 1.1rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 16px rgba(232,130,58,0.4); transition: background 0.15s, transform 0.1s; letter-spacing: 0.5px; }
-.start-btn:active { background: var(–orange-dark); transform: scale(0.98); }
-.error-msg { background: #fff0f0; border: 2px solid #ffaaaa; border-radius: 12px; padding: 12px 16px; font-weight: 700; font-size: 0.88rem; color: var(–red); text-align: center; display: none; }
-.error-msg.show { display: block; }
+/* ════════════════════════════
+SETUP SCREEN
+════════════════════════════ */
+#setup {
+background: var(–s-bg);
+padding: 32px 20px 44px;
+gap: 20px;
+}
 
-/* GAME */
-#game { background: var(–night); color: white; }
-.game-header { background: var(–night2); padding: 16px 20px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.07); }
-.game-header h2 { font-family: ‘Playfair Display’, serif; font-size: 1.05rem; color: var(–gold); }
-.round-badge { background: var(–purple); color: white; border-radius: 20px; padding: 4px 12px; font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
-.restart-btn-small { background: rgba(255,255,255,0.1); border: none; border-radius: 10px; color: rgba(255,255,255,0.6); padding: 6px 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: ‘Nunito’, sans-serif; white-space: nowrap; }
-.progress-dots { display: flex; justify-content: center; gap: 6px; padding: 10px 20px 0; flex-wrap: wrap; }
-.dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: background 0.2s, transform 0.2s; }
-.dot.done { background: var(–purple-light); }
-.dot.current { background: var(–gold); transform: scale(1.4); }
-.game-body { flex: 1; padding: 18px 18px 10px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
-.phase-banner { text-align: center; padding: 8px; font-size: 0.78rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; border-radius: 10px; }
-.phase-banner.night { background: rgba(107,63,160,0.25); color: var(–purple-light); }
-.phase-banner.day { background: rgba(240,192,64,0.12); color: var(–gold); }
-.step-card { background: var(–night2); border-radius: 20px; padding: 20px 18px; border: 1px solid rgba(255,255,255,0.08); }
-.step-phase { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(–purple-light); margin-bottom: 8px; }
-.step-card.day-phase .step-phase { color: var(–gold); }
-.step-icon { font-size: 2.4rem; margin-bottom: 8px; display: block; }
-.step-title { font-family: ‘Playfair Display’, serif; font-size: 1.35rem; color: white; margin-bottom: 10px; line-height: 1.2; }
-.step-script { font-size: 0.92rem; line-height: 1.65; color: rgba(255,255,255,0.75); font-style: italic; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px 15px; border-left: 3px solid var(–purple-light); }
-.step-card.day-phase .step-script { border-left-color: var(–gold); }
-.step-note { margin-top: 10px; font-size: 0.78rem; color: rgba(255,255,255,0.45); font-weight: 600; }
+.logo {
+text-align: center;
+}
+.logo h1 {
+font-family: ‘Playfair Display’, serif;
+font-size: 2rem;
+color: var(–s-text);
+letter-spacing: -0.5px;
+}
+.logo h1 em { color: var(–s-accent); font-style: italic; }
+.logo p { color: var(–s-muted); font-size: 0.85rem; font-weight: 600; margin-top: 4px; }
 
-/* Timer */
-.timer-card { background: linear-gradient(135deg, #2d1f3d 0%, #1a1025 100%); border-radius: 20px; padding: 18px; border: 1px solid rgba(240,192,64,0.2); display: none; }
-.timer-card.show { display: block; }
-.timer-label { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(–gold); margin-bottom: 10px; }
-.timer-mode-row { display: flex; gap: 8px; margin-bottom: 12px; }
-.mode-btn { flex: 1; padding: 8px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.15); background: transparent; color: rgba(255,255,255,0.5); font-family: ‘Nunito’, sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
-.mode-btn.active { background: var(–gold); color: var(–brown); border-color: var(–gold); }
-.countdown-input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.countdown-input-row label { font-size: 0.82rem; color: rgba(255,255,255,0.6); font-weight: 600; }
-.countdown-input-row input { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-family: ‘Nunito’, sans-serif; font-size: 0.95rem; font-weight: 700; padding: 6px 10px; width: 60px; text-align: center; }
-.countdown-input-row input:focus { outline: none; border-color: var(–gold); }
-.timer-display { font-family: ‘Playfair Display’, serif; font-size: 3rem; color: white; text-align: center; letter-spacing: 2px; margin: 8px 0; transition: color 0.3s; }
-.timer-display.warning { color: #ff6b6b; }
-.timer-btns { display: flex; gap: 10px; }
-.timer-btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-family: ‘Nunito’, sans-serif; font-size: 0.9rem; font-weight: 800; cursor: pointer; transition: transform 0.1s; }
-.timer-btn:active { transform: scale(0.96); }
-.timer-btn.start-t { background: var(–gold); color: var(–brown); }
-.timer-btn.reset-t { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+.s-label {
+font-size: 0.7rem;
+font-weight: 900;
+text-transform: uppercase;
+letter-spacing: 2px;
+color: var(–s-accent);
+margin-bottom: 8px;
+}
 
-/* Elim */
-.elim-card { background: rgba(192,57,43,0.15); border: 1px solid rgba(192,57,43,0.3); border-radius: 16px; padding: 16px; }
-.elim-card h3 { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #ff7675; margin-bottom: 10px; }
-.elim-tags { display: flex; flex-wrap: wrap; gap: 8px; min-height: 28px; }
-.elim-tag { background: rgba(192,57,43,0.3); border-radius: 20px; padding: 4px 12px; font-size: 0.82rem; font-weight: 700; color: #ffb3b3; display: flex; align-items: center; gap: 6px; }
-.elim-tag button { background: none; border: none; color: #ff7675; cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0; }
-.elim-empty { font-size: 0.82rem; color: rgba(255,255,255,0.3); font-style: italic; }
-.add-elim-row { display: flex; gap: 8px; margin-top: 10px; }
-.add-elim-row input { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: white; font-family: ‘Nunito’, sans-serif; font-size: 0.88rem; padding: 8px 12px; }
-.add-elim-row input::placeholder { color: rgba(255,255,255,0.3); }
-.add-elim-row input:focus { outline: none; border-color: #ff7675; }
-.add-elim-row button { background: rgba(192,57,43,0.5); border: none; border-radius: 10px; color: white; font-family: ‘Nunito’, sans-serif; font-size: 0.85rem; font-weight: 700; padding: 8px 14px; cursor: pointer; }
-.lovers-hint { margin-top: 10px; font-size: 0.78rem; color: #ff80c8; font-weight: 700; }
+.s-card {
+background: var(–s-card);
+border-radius: var(–radius);
+border: 1.5px solid var(–s-border);
+padding: 16px 18px;
+}
 
-/* Lovers */
-.lovers-card { background: rgba(233,30,140,0.12); border: 1px solid rgba(233,30,140,0.25); border-radius: 16px; padding: 14px 16px; display: none; }
-.lovers-card.show { display: block; }
-.lovers-card h3 { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #ff80c8; margin-bottom: 8px; }
+.player-row {
+display: flex;
+align-items: center;
+gap: 16px;
+}
+.player-row label { font-weight: 700; font-size: 1rem; color: var(–s-text); flex: 1; }
+.cnt-btn {
+width: 38px; height: 38px; border-radius: 50%; border: none;
+background: var(–s-accent); color: white;
+font-size: 1.3rem; font-weight: 800; cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+transition: transform 0.1s, background 0.15s; flex-shrink: 0;
+}
+.cnt-btn:active { transform: scale(0.9); background: #9a400a; }
+#player-count-display { font-size: 1.5rem; font-weight: 900; color: var(–s-text); min-width: 28px; text-align: center; }
+
+.roles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.role-card {
+background: var(–s-card);
+border-radius: var(–radius);
+border: 1.5px solid var(–s-border);
+padding: 14px 12px 12px;
+transition: border-color 0.2s, background 0.2s;
+}
+.role-card.active-role { border-color: var(–s-accent2); background: #fff8f2; }
+.role-icon { font-size: 1.7rem; display: block; margin-bottom: 4px; }
+.role-name { font-weight: 800; font-size: 0.9rem; color: var(–s-text); }
+.role-desc { font-size: 0.7rem; color: var(–s-muted); line-height: 1.35; margin-top: 2px; }
+.rc-ctrl { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.rc-btn {
+width: 26px; height: 26px; border-radius: 50%; border: none;
+background: var(–s-bg); color: var(–s-text);
+font-size: 1rem; font-weight: 800; cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+border: 1.5px solid var(–s-border);
+transition: background 0.15s, transform 0.1s;
+}
+.rc-btn:active { background: var(–s-accent2); color: white; transform: scale(0.9); }
+.rc-num { font-size: 1.05rem; font-weight: 900; color: var(–s-text); min-width: 18px; text-align: center; }
+
+.villagers-row {
+display: flex; align-items: center; gap: 12px;
+background: var(–s-card); border-radius: var(–radius);
+border: 1.5px solid var(–s-border); padding: 14px 18px;
+}
+.villagers-row .vi { font-size: 1.5rem; }
+.villagers-row strong { font-size: 1rem; font-weight: 800; color: var(–s-text); }
+.villagers-row span { font-size: 0.78rem; color: var(–s-muted); font-weight: 600; display: block; }
+
+.error-box {
+background: #fff0f0; border: 1.5px solid #f5aaaa;
+border-radius: 12px; padding: 12px 16px;
+font-weight: 700; font-size: 0.85rem; color: #b02020;
+text-align: center; display: none;
+}
+.error-box.show { display: block; }
+
+.start-btn {
+background: var(–s-accent); color: white; border: none;
+border-radius: var(–radius); padding: 17px;
+font-family: ‘Nunito’, sans-serif; font-size: 1.05rem; font-weight: 800;
+cursor: pointer; letter-spacing: 0.3px;
+box-shadow: 0 4px 18px rgba(192,88,10,0.3);
+transition: background 0.15s, transform 0.1s;
+}
+.start-btn:active { background: #9a400a; transform: scale(0.98); }
+
+/* ════════════════════════════
+GAME SCREEN
+════════════════════════════ */
+#game { background: var(–n-bg); color: var(–n-text); transition: background 0.5s; }
+#game.day-mode { background: var(–d-bg); color: var(–d-text); }
+
+.g-header {
+padding: 16px 18px 12px;
+display: flex; align-items: center; justify-content: space-between;
+background: rgba(0,0,0,0.25);
+border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.g-title { font-family: ‘Playfair Display’, serif; font-size: 1rem; color: rgba(255,255,255,0.6); }
+.round-pill {
+background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7);
+border-radius: 20px; padding: 4px 14px;
+font-size: 0.78rem; font-weight: 800; letter-spacing: 0.5px;
+}
+.restart-btn {
+background: none; border: 1px solid rgba(255,255,255,0.15);
+border-radius: 10px; color: rgba(255,255,255,0.4);
+padding: 5px 12px; font-size: 0.75rem; font-weight: 700;
+cursor: pointer; font-family: ‘Nunito’, sans-serif;
+}
+
+/* Progress */
+.progress-bar-wrap {
+padding: 0 18px;
+background: rgba(0,0,0,0.15);
+border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.progress-bar-inner {
+height: 3px;
+background: rgba(255,255,255,0.08);
+border-radius: 2px;
+overflow: hidden;
+margin: 10px 0;
+}
+.progress-fill {
+height: 100%;
+border-radius: 2px;
+background: linear-gradient(90deg, #7c4dcc, #a375e0);
+transition: width 0.4s ease;
+}
+#game.day-mode .progress-fill { background: linear-gradient(90deg, #c0580a, #e07b30); }
+.step-counter { font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.3); padding-bottom: 8px; }
+
+/* Game body */
+.g-body { flex: 1; overflow-y: auto; padding: 20px 18px 10px; display: flex; flex-direction: column; gap: 14px; }
+
+/* Phase card — the big centrepiece */
+.phase-card {
+border-radius: 20px;
+padding: 30px 22px;
+text-align: center;
+border: 1px solid rgba(255,255,255,0.08);
+animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.night-card { background: var(–n-card); border-color: var(–n-border); }
+.day-card   { background: var(–d-card); border-color: var(–d-border); }
+
+.phase-emoji { font-size: 4rem; display: block; margin-bottom: 14px; }
+.phase-label {
+font-size: 0.68rem; font-weight: 900; text-transform: uppercase;
+letter-spacing: 3px; margin-bottom: 8px;
+}
+.night-card .phase-label { color: var(–n-muted); }
+.day-card   .phase-label { color: var(–d-muted); }
+
+.phase-name {
+font-family: ‘Playfair Display’, serif;
+font-size: 1.9rem; line-height: 1.1;
+}
+.night-card .phase-name { color: var(–n-text); }
+.day-card   .phase-name { color: var(–d-text); }
+
+.phase-sub {
+font-size: 0.85rem; font-weight: 600; margin-top: 8px;
+}
+.night-card .phase-sub { color: var(–n-muted); }
+.day-card   .phase-sub { color: var(–d-muted); }
+
+/* Tip pill (very subtle, optional) */
+.tip-pill {
+display: inline-flex; align-items: center; gap: 6px;
+margin-top: 16px;
+padding: 6px 14px; border-radius: 20px;
+font-size: 0.75rem; font-weight: 700;
+}
+.night-card .tip-pill { background: rgba(124,77,204,0.18); color: var(–n-accent2); }
+.day-card   .tip-pill { background: rgba(192,88,10,0.18); color: var(–d-accent2); }
+
+/* Lovers card */
+.lovers-card {
+border-radius: var(–radius);
+padding: 16px;
+border: 1px solid rgba(255,100,180,0.25);
+background: rgba(255,50,150,0.08);
+animation: popIn 0.3s ease both;
+animation-delay: 0.1s;
+}
+.lovers-card h3 { font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #e878c0; margin-bottom: 10px; }
 .lovers-inputs { display: flex; gap: 8px; align-items: center; }
-.lovers-inputs input { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: white; font-family: ‘Nunito’, sans-serif; font-size: 0.88rem; padding: 8px 12px; }
-.lovers-inputs input::placeholder { color: rgba(255,255,255,0.3); }
-.lovers-inputs input:focus { outline: none; border-color: #ff80c8; }
-.lovers-sep { color: #ff80c8; font-size: 1.2rem; }
-.lovers-set { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 0.85rem; color: #ff80c8; font-weight: 700; }
+.lovers-inputs input {
+flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+border-radius: 10px; color: white; font-family: ‘Nunito’, sans-serif;
+font-size: 0.9rem; padding: 9px 12px;
+}
+.lovers-inputs input::placeholder { color: rgba(255,255,255,0.25); }
+.lovers-inputs input:focus { outline: none; border-color: #e878c0; }
+.lovers-sep { color: #e878c0; font-size: 1.2rem; flex-shrink: 0; }
+.lovers-linked { margin-top: 8px; font-size: 0.82rem; font-weight: 700; color: #e878c0; }
+
+/* Eliminated card */
+.elim-card {
+border-radius: var(–radius);
+padding: 16px;
+border: 1px solid rgba(220,60,60,0.2);
+background: rgba(200,40,40,0.08);
+animation: popIn 0.3s ease both;
+animation-delay: 0.15s;
+}
+.elim-card h3 { font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #e07070; margin-bottom: 10px; }
+.elim-tags { display: flex; flex-wrap: wrap; gap: 7px; min-height: 24px; }
+.elim-tag {
+background: rgba(200,40,40,0.2); border-radius: 20px;
+padding: 4px 10px; font-size: 0.8rem; font-weight: 700; color: #ffaaaa;
+display: flex; align-items: center; gap: 5px;
+}
+.elim-tag button { background: none; border: none; color: #ff7070; cursor: pointer; font-size: 0.85rem; padding: 0; line-height: 1; }
+.elim-empty { font-size: 0.8rem; color: rgba(255,255,255,0.25); font-style: italic; }
+.add-elim { display: flex; gap: 8px; margin-top: 10px; }
+.add-elim input {
+flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+border-radius: 10px; color: white; font-family: ‘Nunito’, sans-serif;
+font-size: 0.88rem; padding: 8px 12px;
+}
+.add-elim input::placeholder { color: rgba(255,255,255,0.25); }
+.add-elim input:focus { outline: none; border-color: #e07070; }
+.add-elim button {
+background: rgba(200,40,40,0.35); border: none; border-radius: 10px;
+color: #ffaaaa; font-family: ‘Nunito’, sans-serif;
+font-size: 0.85rem; font-weight: 700; padding: 8px 14px; cursor: pointer;
+}
+.lovers-warning { margin-top: 8px; font-size: 0.75rem; font-weight: 700; color: #e878c0; }
+
+/* Timer card */
+.timer-card {
+border-radius: var(–radius);
+padding: 18px;
+border: 1px solid rgba(255,200,60,0.15);
+background: rgba(255,180,40,0.06);
+animation: popIn 0.3s ease both;
+animation-delay: 0.1s;
+display: none;
+}
+.timer-card.show { display: block; }
+.timer-card h3 { font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #c89040; margin-bottom: 12px; }
+.timer-mode-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.mode-btn {
+flex: 1; padding: 8px; border-radius: 10px;
+border: 1.5px solid rgba(255,255,255,0.1);
+background: transparent; color: rgba(255,255,255,0.35);
+font-family: ‘Nunito’, sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+transition: all 0.15s;
+}
+.mode-btn.active { background: #c89040; color: #1a0e00; border-color: #c89040; }
+.cd-input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.cd-input-row label { font-size: 0.8rem; color: rgba(255,255,255,0.45); font-weight: 600; }
+.cd-input-row input {
+width: 58px; background: rgba(255,255,255,0.08);
+border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+color: white; font-family: ‘Nunito’, sans-serif;
+font-size: 0.95rem; font-weight: 700; padding: 6px 10px; text-align: center;
+}
+.cd-input-row input:focus { outline: none; border-color: #c89040; }
+.timer-display {
+font-family: ‘Playfair Display’, serif; font-size: 3rem;
+color: white; text-align: center; letter-spacing: 2px; margin: 6px 0;
+transition: color 0.3s;
+}
+.timer-display.warn { color: #e05050; }
+.timer-btns { display: flex; gap: 10px; margin-top: 4px; }
+.t-btn {
+flex: 1; padding: 12px; border-radius: 12px; border: none;
+font-family: ‘Nunito’, sans-serif; font-size: 0.88rem; font-weight: 800;
+cursor: pointer; transition: transform 0.1s;
+}
+.t-btn:active { transform: scale(0.96); }
+.t-btn.play { background: #c89040; color: #1a0e00; }
+.t-btn.reset { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); }
 
 /* Nav */
-.nav-row { display: flex; gap: 12px; padding: 14px 18px 28px; background: var(–night); border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
-.nav-btn { flex: 1; padding: 15px; border-radius: 14px; border: none; font-family: ‘Nunito’, sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; transition: transform 0.1s, background 0.15s; }
+.g-nav {
+display: flex; gap: 12px;
+padding: 14px 18px 32px;
+background: rgba(0,0,0,0.2);
+border-top: 1px solid rgba(255,255,255,0.05);
+flex-shrink: 0;
+}
+.nav-btn {
+flex: 1; padding: 15px; border-radius: 14px; border: none;
+font-family: ‘Nunito’, sans-serif; font-size: 1rem; font-weight: 800;
+cursor: pointer; transition: transform 0.1s, background 0.15s;
+}
 .nav-btn:active { transform: scale(0.97); }
-.nav-btn.prev { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
-.nav-btn.next-btn { background: var(–orange); color: white; box-shadow: 0 4px 16px rgba(232,130,58,0.35); }
+.nav-back { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); }
+.nav-next { background: var(–s-accent); color: white; box-shadow: 0 4px 18px rgba(192,88,10,0.3); }
+#game.day-mode .nav-next { background: #c0580a; }
 
-.fade-in { animation: fadeUp 0.3s ease both; }
-@keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+@keyframes popIn {
+from { opacity: 0; transform: translateY(16px) scale(0.97); }
+to   { opacity: 1; transform: translateY(0) scale(1); }
+}
 </style>
 
 </head>
 <body>
 
-<!-- SETUP -->
+<!-- ══ SETUP ══ -->
 
 <div id="setup" class="screen active">
   <div class="logo">
-    <h1>🌙 <span>Mafia</span> Narrator</h1>
+    <h1>🌙 <em>Mafia</em> Narrator</h1>
     <p>Set up your game below</p>
   </div>
 
   <div>
-    <div class="section-label">👥 Total Players</div>
-    <div class="player-count-row">
-      <label>Number of players</label>
-      <button class="count-btn" onclick="changeCount(-1)">−</button>
-      <div id="player-count-display">8</div>
-      <button class="count-btn" onclick="changeCount(1)">+</button>
+    <div class="s-label">Total Players</div>
+    <div class="s-card">
+      <div class="player-row">
+        <label>Number of players</label>
+        <button class="cnt-btn" onclick="changeCount(-1)">−</button>
+        <div id="player-count-display">8</div>
+        <button class="cnt-btn" onclick="changeCount(1)">+</button>
+      </div>
     </div>
   </div>
 
   <div>
-    <div class="section-label">🎭 Special Roles</div>
+    <div class="s-label">Special Roles</div>
     <div class="roles-grid">
-      <div class="role-card mafia has-role" id="card-mafia">
+      <div class="role-card active-role" id="card-mafia">
         <span class="role-icon">🔪</span>
         <div class="role-name">Mafia</div>
         <div class="role-desc">Eliminate a villager each night.</div>
-        <div class="role-count-ctrl">
-          <button onclick="changeRole('mafia',-1)">−</button>
+        <div class="rc-ctrl">
+          <button class="rc-btn" onclick="changeRole('mafia',-1)">−</button>
           <span class="rc-num" id="rc-mafia">1</span>
-          <button onclick="changeRole('mafia',1)">+</button>
+          <button class="rc-btn" onclick="changeRole('mafia',1)">+</button>
         </div>
       </div>
-      <div class="role-card detective" id="card-detective">
+      <div class="role-card" id="card-detective">
         <span class="role-icon">🔍</span>
         <div class="role-name">Detective</div>
         <div class="role-desc">Investigate one player per night.</div>
-        <div class="role-count-ctrl">
-          <button onclick="changeRole('detective',-1)">−</button>
+        <div class="rc-ctrl">
+          <button class="rc-btn" onclick="changeRole('detective',-1)">−</button>
           <span class="rc-num" id="rc-detective">0</span>
-          <button onclick="changeRole('detective',1)">+</button>
+          <button class="rc-btn" onclick="changeRole('detective',1)">+</button>
         </div>
       </div>
-      <div class="role-card doctor" id="card-doctor">
+      <div class="role-card" id="card-doctor">
         <span class="role-icon">💊</span>
         <div class="role-name">Doctor</div>
         <div class="role-desc">Protect one player per night.</div>
-        <div class="role-count-ctrl">
-          <button onclick="changeRole('doctor',-1)">−</button>
+        <div class="rc-ctrl">
+          <button class="rc-btn" onclick="changeRole('doctor',-1)">−</button>
           <span class="rc-num" id="rc-doctor">0</span>
-          <button onclick="changeRole('doctor',1)">+</button>
+          <button class="rc-btn" onclick="changeRole('doctor',1)">+</button>
         </div>
       </div>
-      <div class="role-card cupid" id="card-cupid">
+      <div class="role-card" id="card-cupid">
         <span class="role-icon">💘</span>
         <div class="role-name">Cupid</div>
-        <div class="role-desc">Links 2 players — if one dies, so does the other.</div>
-        <div class="role-count-ctrl">
-          <button onclick="changeRole('cupid',-1)">−</button>
+        <div class="role-desc">Links 2 players — if one dies, both die.</div>
+        <div class="rc-ctrl">
+          <button class="rc-btn" onclick="changeRole('cupid',-1)">−</button>
           <span class="rc-num" id="rc-cupid">0</span>
-          <button onclick="changeRole('cupid',1)">+</button>
+          <button class="rc-btn" onclick="changeRole('cupid',1)">+</button>
         </div>
       </div>
     </div>
   </div>
 
   <div>
-    <div class="section-label">🏘️ Villagers</div>
-    <div class="villagers-note">
-      <span class="vi">👨‍👩‍👧‍👦</span>
+    <div class="s-label">Villagers</div>
+    <div class="villagers-row">
+      <span class="vi">🏘️</span>
       <div>
         <strong id="villager-count">7</strong> Villagers
         <span>Regular town folk — no special ability</span>
@@ -224,23 +452,26 @@
     </div>
   </div>
 
-  <div class="error-msg" id="error-msg">⚠️ You need at least 1 Mafia member and enough players for the roles!</div>
+  <div class="error-box" id="error-box">⚠️ You need at least 1 Mafia and enough players for all roles!</div>
   <button class="start-btn" onclick="startGame()">Start Game →</button>
 </div>
 
-<!-- GAME -->
+<!-- ══ GAME ══ -->
 
 <div id="game" class="screen">
-  <div class="game-header">
-    <h2>🌙 Mafia</h2>
-    <span class="round-badge" id="round-badge">Round 1</span>
-    <button class="restart-btn-small" onclick="restartGame()">↩ Restart</button>
+  <div class="g-header">
+    <span class="g-title">🌙 Mafia</span>
+    <span class="round-pill" id="round-pill">Round 1</span>
+    <button class="restart-btn" onclick="restartGame()">↩ Restart</button>
   </div>
-  <div class="progress-dots" id="progress-dots"></div>
-  <div class="game-body" id="game-body"></div>
-  <div class="nav-row">
-    <button class="nav-btn prev" id="btn-prev" onclick="prevStep()">← Back</button>
-    <button class="nav-btn next-btn" id="btn-next" onclick="nextStep()">Next →</button>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-inner"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="step-counter" id="step-counter">Step 1 of 1</div>
+  </div>
+  <div class="g-body" id="g-body"></div>
+  <div class="g-nav">
+    <button class="nav-btn nav-back" id="btn-back" onclick="prevStep()">← Back</button>
+    <button class="nav-btn nav-next" id="btn-next" onclick="nextStep()">Next →</button>
   </div>
 </div>
 
@@ -249,7 +480,7 @@ let totalPlayers = 8;
 let roles = { mafia:1, detective:0, doctor:0, cupid:0 };
 let round = 1;
 let steps = [];
-let currentStep = 0;
+let cur = 0;
 let eliminated = [];
 let lover1 = '', lover2 = '';
 let timerInterval = null;
@@ -258,29 +489,29 @@ let timerRunning = false;
 let timerMode = 'stopwatch';
 let countdownFrom = 120;
 
-// ── SETUP ──
-function changeCount(delta) {
-  totalPlayers = Math.max(3, totalPlayers + delta);
+// ─── SETUP ───
+function changeCount(d) {
+  totalPlayers = Math.max(3, totalPlayers + d);
   document.getElementById('player-count-display').textContent = totalPlayers;
   updateVillagers();
 }
-function changeRole(role, delta) {
-  roles[role] = Math.max(0, roles[role] + delta);
+function changeRole(role, d) {
+  roles[role] = Math.max(0, roles[role] + d);
   document.getElementById('rc-' + role).textContent = roles[role];
-  document.getElementById('card-' + role).classList.toggle('has-role', roles[role] > 0);
+  document.getElementById('card-' + role).classList.toggle('active-role', roles[role] > 0);
   updateVillagers();
 }
 function updateVillagers() {
-  const special = roles.mafia + roles.detective + roles.doctor + roles.cupid;
-  document.getElementById('villager-count').textContent = Math.max(0, totalPlayers - special);
+  const sp = roles.mafia + roles.detective + roles.doctor + roles.cupid;
+  document.getElementById('villager-count').textContent = Math.max(0, totalPlayers - sp);
 }
 function startGame() {
-  const special = roles.mafia + roles.detective + roles.doctor + roles.cupid;
-  const err = document.getElementById('error-msg');
-  if (roles.mafia < 1 || special > totalPlayers) { err.classList.add('show'); return; }
+  const sp = roles.mafia + roles.detective + roles.doctor + roles.cupid;
+  const err = document.getElementById('error-box');
+  if (roles.mafia < 1 || sp > totalPlayers) { err.classList.add('show'); return; }
   err.classList.remove('show');
   round = 1; eliminated = []; lover1 = ''; lover2 = '';
-  buildSteps(); currentStep = 0; renderStep();
+  buildSteps(); cur = 0; renderStep();
   document.getElementById('setup').classList.remove('active');
   document.getElementById('game').classList.add('active');
 }
@@ -290,128 +521,80 @@ function restartGame() {
   document.getElementById('setup').classList.add('active');
 }
 
-// ── STEP BUILDER ──
+// ─── STEPS ───
 function buildSteps() {
   steps = [];
 
-  steps.push({
-    phase:'night', icon:'🌙', title:'Everyone Goes to Sleep',
-    script:'"Everyone, close your eyes and put your heads down. The village is going to sleep… 😴"\n\n"Make sure no one is peeking!"',
-    note:'Wait a moment for everyone to settle.'
-  });
+  steps.push({ phase:'night', emoji:'😴', name:'Everyone Sleeps', sub:'The village closes their eyes', tip:null });
 
   if (roles.cupid > 0 && round === 1) {
-    steps.push({
-      phase:'night', icon:'💘', title:'Cupid, Wake Up',
-      script:'"Cupid, open your eyes. 💘"\n\n"Silently point to TWO players you wish to link as lovers. If one of them dies at any point, the other will die too."\n\n"Cupid, close your eyes and go back to sleep."',
-      note:'Record the two lovers in the box below.',
-      showLovers: true
-    });
+    steps.push({ phase:'night', emoji:'💘', name:'Cupid Wakes', sub:'Cupid chooses two lovers', tip:'Note the two lovers below', showLovers:true });
   }
 
-  steps.push({
-    phase:'night', icon:'🔪', title:'Mafia, Wake Up',
-    script:'"Mafia, open your eyes and look around to see your team. 👀"\n\n"Silently agree on one person to eliminate tonight. Point together when you\'ve decided."\n\n"Mafia, close your eyes and go back to sleep."',
-    note:'Note who the Mafia have chosen.'
-  });
+  steps.push({ phase:'night', emoji:'🔪', name:'Mafia Wakes', sub:'The Mafia choose their target', tip:null });
 
   if (roles.detective > 0) {
-    steps.push({
-      phase:'night', icon:'🔍', title:'Detective, Wake Up',
-      script:'"Detective, open your eyes. 🔍"\n\n"Silently point to one player you\'d like to investigate."\n\n"(Narrator — give a thumbs up 👍 if they are Mafia, thumbs down 👎 if they\'re innocent.)"\n\n"Detective, close your eyes and go back to sleep."',
-      note:'Show thumbs up for Mafia, thumbs down for town folk.'
-    });
+    steps.push({ phase:'night', emoji:'🔍', name:'Detective Wakes', sub:'The Detective investigates a player', tip:'👍 Mafia · 👎 Innocent' });
   }
 
   if (roles.doctor > 0) {
-    steps.push({
-      phase:'night', icon:'💊', title:'Doctor, Wake Up',
-      script:'"Doctor, open your eyes. 💊"\n\n"Silently point to one person you\'d like to protect tonight. You may protect yourself."\n\n"Doctor, close your eyes and go back to sleep."',
-      note:'If the Doctor protects the Mafia\'s target, no one is eliminated tonight.'
-    });
+    steps.push({ phase:'night', emoji:'💊', name:'Doctor Wakes', sub:'The Doctor chooses who to protect', tip:null });
   }
 
-  steps.push({
-    phase:'day', icon:'🌅', title:'The Village Wakes Up',
-    script:'"Everyone, open your eyes! 🌅 Good morning, village."\n\n"Last night…" [announce who was eliminated, or say "it was a peaceful night" if the Doctor saved them].\n\n[If eliminated]: "[Name], you have been eliminated. Please reveal your role and remain silent for the rest of the round."',
-    note:'Announce the elimination result. Add eliminated players below.',
-    showElim: true, isAnnounce: true
-  });
-
-  steps.push({
-    phase:'day', icon:'🗣️', title:'Debate & Discussion',
-    script:'"Village, you have time to discuss who you think the Mafia might be. Accuse, defend, argue — but choose wisely! Your vote tonight could save or doom the village."\n\n"When time is up, you\'ll vote to eliminate a suspect."',
-    note:'Use the timer below to track debate time.',
-    showTimer: true
-  });
-
-  steps.push({
-    phase:'day', icon:'🗳️', title:'Vote to Eliminate',
-    script:'"Alright, time to vote! On the count of three, everyone point to the person you want to eliminate.\n\nOne… Two… Three — POINT! 👉"\n\n"[Count the votes. Majority rules. In a tie, no one is eliminated — or re-vote, your call.]"\n\n"[Name], the village has spoken. Please reveal your role."',
-    note:'Majority vote eliminates. Ties = no elimination (narrator\'s call).',
-    showElim: true
-  });
-
-  steps.push({
-    phase:'night', icon:'🌙', title:'Night Falls Again',
-    script:`"The sun sets and the village goes back to sleep. Close your eyes, everyone… 😴"\n\n"Round ${round + 1} is about to begin."`,
-    note:'Tap "Next Round" to continue.',
-    isNewRound: true
-  });
+  steps.push({ phase:'day', emoji:'🌅', name:'Village Wakes', sub:'Announce last night\'s result', tip:null, showElim:true, isAnnounce:true });
+  steps.push({ phase:'day', emoji:'🗣️', name:'Debate', sub:'The village discusses and accuses', tip:null, showTimer:true, showElim:true });
+  steps.push({ phase:'day', emoji:'🗳️', name:'Vote', sub:'The village votes to eliminate', tip:'Majority rules — ties = no elimination', showElim:true });
+  steps.push({ phase:'night', emoji:'🌙', name:'Night Falls', sub:`Round ${round + 1} is about to begin`, tip:null, isNewRound:true });
 }
 
-// ── RENDER ──
+// ─── RENDER ───
 function renderStep() {
   stopTimer();
-  const step = steps[currentStep];
-  document.getElementById('round-badge').textContent = 'Round ' + round;
+  const step = steps[cur];
+  const isDay = step.phase === 'day';
+  const game = document.getElementById('game');
+  game.className = 'screen active' + (isDay ? ' day-mode' : '');
 
-  // Dots
-  const dots = document.getElementById('progress-dots');
-  dots.innerHTML = steps.map((s,i) => `<div class="dot ${i<currentStep?'done':i===currentStep?'current':''}"></div>`).join('');
+  document.getElementById('round-pill').textContent = 'Round ' + round;
+  document.getElementById('step-counter').textContent = `Step ${cur + 1} of ${steps.length}`;
+  const pct = ((cur + 1) / steps.length * 100).toFixed(1);
+  document.getElementById('progress-fill').style.width = pct + '%';
 
-  // Nav
-  document.getElementById('btn-prev').style.visibility = currentStep === 0 ? 'hidden' : 'visible';
-  document.getElementById('btn-next').textContent = currentStep === steps.length-1 ? '🔄 Next Round' : 'Next →';
+  document.getElementById('btn-back').style.visibility = cur === 0 ? 'hidden' : 'visible';
+  document.getElementById('btn-next').textContent = cur === steps.length - 1 ? '🔄 Next Round' : 'Next →';
 
-  const body = document.getElementById('game-body');
+  const body = document.getElementById('g-body');
   body.innerHTML = '';
 
-  // Phase banner
-  const banner = document.createElement('div');
-  banner.className = `phase-banner ${step.phase} fade-in`;
-  banner.textContent = step.phase === 'night' ? '🌙 Night Phase' : '☀️ Day Phase';
-  body.appendChild(banner);
-
-  // Step card
-  const card = document.createElement('div');
-  card.className = `step-card ${step.phase}-phase fade-in`;
-  card.innerHTML = `
-    <div class="step-phase">${step.phase === 'night' ? 'Night Action' : 'Day Action'}</div>
-    <span class="step-icon">${step.icon}</span>
-    <div class="step-title">${step.title}</div>
-    <div class="step-script">${step.script.replace(/\n/g,'<br>')}</div>
-    ${step.note ? `<div class="step-note">📋 ${step.note}</div>` : ''}
+  // Phase card
+  const pc = document.createElement('div');
+  pc.className = `phase-card ${isDay ? 'day-card' : 'night-card'}`;
+  pc.innerHTML = `
+    <span class="phase-emoji">${step.emoji}</span>
+    <div class="phase-label">${step.phase === 'night' ? 'Night Phase' : 'Day Phase'}</div>
+    <div class="phase-name">${step.name}</div>
+    <div class="phase-sub">${step.sub}</div>
+    ${step.tip ? `<div class="tip-pill">💡 ${step.tip}</div>` : ''}
   `;
-  body.appendChild(card);
+  body.appendChild(pc);
 
   // Lovers
   if (step.showLovers) {
     const lc = document.createElement('div');
-    lc.className = 'lovers-card show fade-in';
+    lc.className = 'lovers-card';
     lc.innerHTML = `
       <h3>💘 The Lovers</h3>
       <div class="lovers-inputs">
-        <input type="text" id="lover1-input" placeholder="Player 1" value="${lover1}">
+        <input type="text" id="l1" placeholder="Player 1" value="${lover1}">
         <span class="lovers-sep">💕</span>
-        <input type="text" id="lover2-input" placeholder="Player 2" value="${lover2}">
+        <input type="text" id="l2" placeholder="Player 2" value="${lover2}">
       </div>
-      ${lover1 && lover2 ? `<div class="lovers-set">❤️ ${lover1} & ${lover2} are linked</div>` : ''}
+      ${lover1 && lover2 ? `<div class="lovers-linked">❤️ ${lover1} & ${lover2} are linked</div>` : ''}
     `;
     body.appendChild(lc);
     setTimeout(() => {
-      const i1 = document.getElementById('lover1-input');
-      const i2 = document.getElementById('lover2-input');
+      const i1 = document.getElementById('l1');
+      const i2 = document.getElementById('l2');
       if (i1) i1.addEventListener('input', () => { lover1 = i1.value; });
       if (i2) i2.addEventListener('input', () => { lover2 = i2.value; });
     }, 50);
@@ -420,129 +603,112 @@ function renderStep() {
   // Eliminated tracker
   if (step.showElim) {
     const ec = document.createElement('div');
-    ec.className = 'elim-card fade-in';
+    ec.className = 'elim-card';
     ec.innerHTML = `
-      <h3>💀 Eliminated Players</h3>
+      <h3>💀 Eliminated</h3>
       <div class="elim-tags" id="elim-tags">${renderElimTags()}</div>
-      <div class="add-elim-row">
-        <input type="text" id="elim-input" placeholder="Player name…">
+      <div class="add-elim">
+        <input type="text" id="elim-inp" placeholder="Add player name…">
         <button onclick="addElim()">+ Add</button>
       </div>
-      ${lover1 && lover2 ? `<div class="lovers-hint">💘 Lovers: ${lover1} & ${lover2} — if one dies, both die!</div>` : ''}
+      ${lover1 && lover2 ? `<div class="lovers-warning">💘 ${lover1} & ${lover2} are linked — if one dies, both die</div>` : ''}
     `;
     body.appendChild(ec);
     setTimeout(() => {
-      const inp = document.getElementById('elim-input');
+      const inp = document.getElementById('elim-inp');
       if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') addElim(); });
     }, 50);
   }
 
   // Timer
   const tc = document.createElement('div');
-  tc.className = `timer-card fade-in${step.showTimer ? ' show' : ''}`;
+  tc.className = `timer-card${step.showTimer ? ' show' : ''}`;
   tc.innerHTML = `
-    <div class="timer-label">⏱️ Debate Timer</div>
+    <h3>⏱ Debate Timer</h3>
     <div class="timer-mode-row">
       <button class="mode-btn${timerMode==='stopwatch'?' active':''}" onclick="switchMode('stopwatch',this)">Stopwatch</button>
       <button class="mode-btn${timerMode==='countdown'?' active':''}" onclick="switchMode('countdown',this)">Countdown</button>
     </div>
-    <div id="cd-row" class="countdown-input-row" style="${timerMode==='countdown'?'':'display:none'}">
+    <div id="cd-row" class="cd-input-row" style="${timerMode==='countdown'?'':'display:none'}">
       <label>Minutes:</label>
       <input type="number" id="cd-mins" min="1" max="60" value="${Math.floor(countdownFrom/60)}">
     </div>
-    <div class="timer-display" id="timer-display">${formatTime(timerMode==='countdown'?countdownFrom:0)}</div>
+    <div class="timer-display" id="timer-disp">${fmt(timerMode==='countdown'?countdownFrom:0)}</div>
     <div class="timer-btns">
-      <button class="timer-btn start-t" id="timer-start-btn" onclick="toggleTimer()">▶ Start</button>
-      <button class="timer-btn reset-t" onclick="resetTimer()">↺ Reset</button>
+      <button class="t-btn play" id="t-play" onclick="toggleTimer()">▶ Start</button>
+      <button class="t-btn reset" onclick="resetTimer()">↺ Reset</button>
     </div>
   `;
   body.appendChild(tc);
 
   setTimeout(() => {
-    const cdInp = document.getElementById('cd-mins');
-    if (cdInp) cdInp.addEventListener('input', () => { countdownFrom = (parseInt(cdInp.value)||1)*60; });
+    const cdI = document.getElementById('cd-mins');
+    if (cdI) cdI.addEventListener('input', () => { countdownFrom = (parseInt(cdI.value)||1)*60; });
   }, 50);
 
   body.scrollTop = 0;
 }
 
+// ─── NAV ───
+function nextStep() {
+  if (cur === steps.length - 1) { round++; buildSteps(); cur = 0; }
+  else cur++;
+  renderStep();
+}
+function prevStep() { if (cur > 0) { cur--; renderStep(); } }
+
+// ─── ELIMINATED ───
+function addElim() {
+  const inp = document.getElementById('elim-inp');
+  const name = inp ? inp.value.trim() : '';
+  if (!name) return;
+  const isL1 = lover1 && name.toLowerCase() === lover1.toLowerCase();
+  const isL2 = lover2 && name.toLowerCase() === lover2.toLowerCase();
+  if ((isL1 || isL2) && lover1 && lover2) {
+    const partner = isL1 ? lover2 : lover1;
+    eliminated.push(name);
+    if (!eliminated.map(e=>e.replace(' 💘','')).map(e=>e.toLowerCase()).includes(partner.toLowerCase())) {
+      eliminated.push(partner + ' 💘');
+    }
+    alert(`💘 ${name} has died — their lover ${partner} also dies!`);
+  } else {
+    eliminated.push(name);
+  }
+  if (inp) inp.value = '';
+  refreshElim();
+}
+function removeElim(i) { eliminated.splice(i,1); refreshElim(); }
 function renderElimTags() {
-  if (eliminated.length === 0) return '<span class="elim-empty">No one eliminated yet</span>';
+  if (!eliminated.length) return '<span class="elim-empty">No one eliminated yet</span>';
   return eliminated.map((e,i) => `<div class="elim-tag">${e}<button onclick="removeElim(${i})">✕</button></div>`).join('');
 }
-
-function refreshElimTags() {
+function refreshElim() {
   const c = document.getElementById('elim-tags');
   if (c) c.innerHTML = renderElimTags();
 }
 
-// ── NAV ──
-function nextStep() {
-  if (currentStep === steps.length - 1) {
-    round++;
-    buildSteps();
-    currentStep = 0;
-  } else {
-    currentStep++;
-  }
-  renderStep();
-}
-function prevStep() {
-  if (currentStep > 0) { currentStep--; renderStep(); }
-}
-
-// ── ELIMINATIONS ──
-function addElim() {
-  const inp = document.getElementById('elim-input');
-  const name = inp ? inp.value.trim() : '';
-  if (!name) return;
-  const isLover1 = lover1 && name.toLowerCase() === lover1.toLowerCase();
-  const isLover2 = lover2 && name.toLowerCase() === lover2.toLowerCase();
-  if ((isLover1 || isLover2) && lover1 && lover2) {
-    const partner = isLover1 ? lover2 : lover1;
-    eliminated.push(name);
-    if (!eliminated.map(e=>e.toLowerCase()).includes(partner.toLowerCase())) {
-      eliminated.push(partner + ' 💘');
-    }
-    alert(`💘 ${name} has died! Their lover ${partner} also dies with them!`);
-  } else {
-    eliminated.push(name);
-  }
-  inp.value = '';
-  refreshElimTags();
-}
-function removeElim(i) {
-  eliminated.splice(i, 1);
-  refreshElimTags();
-}
-
-// ── TIMER ──
+// ─── TIMER ───
 function switchMode(mode, btn) {
-  timerMode = mode;
-  stopTimer();
-  timerSeconds = 0;
+  timerMode = mode; stopTimer(); timerSeconds = 0;
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const cdRow = document.getElementById('cd-row');
-  if (cdRow) cdRow.style.display = mode === 'countdown' ? '' : 'none';
-  const disp = document.getElementById('timer-display');
-  if (disp) disp.textContent = formatTime(mode === 'countdown' ? countdownFrom : 0);
-  const sb = document.getElementById('timer-start-btn');
-  if (sb) sb.textContent = '▶ Start';
+  const cr = document.getElementById('cd-row');
+  if (cr) cr.style.display = mode === 'countdown' ? '' : 'none';
+  const d = document.getElementById('timer-disp');
+  if (d) { d.textContent = fmt(mode==='countdown'?countdownFrom:0); d.classList.remove('warn'); }
+  const pb = document.getElementById('t-play');
+  if (pb) pb.textContent = '▶ Start';
 }
-
 function toggleTimer() {
   if (timerRunning) {
     stopTimer();
-    const btn = document.getElementById('timer-start-btn');
-    if (btn) btn.textContent = '▶ Resume';
+    const b = document.getElementById('t-play');
+    if (b) b.textContent = '▶ Resume';
   } else {
-    if (!timerRunning && timerSeconds === 0 && timerMode === 'countdown') {
-      timerSeconds = countdownFrom;
-    }
+    if (timerSeconds === 0 && timerMode === 'countdown') timerSeconds = countdownFrom;
     timerRunning = true;
-    const btn = document.getElementById('timer-start-btn');
-    if (btn) btn.textContent = '⏸ Pause';
+    const b = document.getElementById('t-play');
+    if (b) b.textContent = '⏸ Pause';
     timerInterval = setInterval(() => {
       if (timerMode === 'stopwatch') {
         timerSeconds++;
@@ -550,47 +716,30 @@ function toggleTimer() {
         timerSeconds = Math.max(0, timerSeconds - 1);
         if (timerSeconds === 0) {
           stopTimer();
-          const b = document.getElementById('timer-start-btn');
-          if (b) b.textContent = '▶ Start';
-          const d = document.getElementById('timer-display');
-          if (d) d.classList.add('warning');
+          const pb = document.getElementById('t-play');
+          if (pb) pb.textContent = '▶ Start';
         }
       }
       updateTimerDisplay();
     }, 1000);
   }
 }
-
-function stopTimer() {
-  clearInterval(timerInterval);
-  timerInterval = null;
-  timerRunning = false;
-}
-
+function stopTimer() { clearInterval(timerInterval); timerInterval = null; timerRunning = false; }
 function resetTimer() {
-  stopTimer();
-  timerSeconds = 0;
-  const btn = document.getElementById('timer-start-btn');
-  if (btn) btn.textContent = '▶ Start';
-  const disp = document.getElementById('timer-display');
-  if (disp) { disp.textContent = formatTime(timerMode === 'countdown' ? countdownFrom : 0); disp.classList.remove('warning'); }
+  stopTimer(); timerSeconds = 0;
+  const b = document.getElementById('t-play'); if (b) b.textContent = '▶ Start';
+  const d = document.getElementById('timer-disp');
+  if (d) { d.textContent = fmt(timerMode==='countdown'?countdownFrom:0); d.classList.remove('warn'); }
 }
-
 function updateTimerDisplay() {
-  const disp = document.getElementById('timer-display');
-  if (!disp) return;
-  disp.textContent = formatTime(timerSeconds);
-  if (timerMode === 'countdown' && timerSeconds <= 30 && timerSeconds > 0) {
-    disp.classList.add('warning');
-  } else {
-    disp.classList.remove('warning');
-  }
+  const d = document.getElementById('timer-disp');
+  if (!d) return;
+  d.textContent = fmt(timerSeconds);
+  if (timerMode === 'countdown' && timerSeconds <= 30) d.classList.add('warn');
+  else d.classList.remove('warn');
 }
-
-function formatTime(s) {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${m}:${sec.toString().padStart(2,'0')}`;
+function fmt(s) {
+  return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
 }
 </script>
 
